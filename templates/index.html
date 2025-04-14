@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Register - Shield</title>
+    <link rel='stylesheet' href="{{ url_for('static', filename='css/style.css') }}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        /* Notification styles from previous index.html */
+        .notification-container {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .notification {
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: white;
+            opacity: 0;
+            animation: fadeInOut 5s ease forwards;
+            background-color: rgba(255, 0, 0, 0.8);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification.error {
+            background-color: rgba(255, 82, 82, 0.8); /* Red for error */
+        }
+
+        .notification.success {
+            background-color: rgba(76, 175, 80, 0.8); /* Green for success */
+        }
+
+        .notification.info {
+            background-color: rgba(33, 150, 243, 0.8); /* Blue for info */
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="curved-shape"></div>
+        <div class="curved-shape2"></div>
+
+        <!-- Notification container -->
+        <div class="notification-container" id="notificationContainer"></div>
+
+        <div class="form-box Login">
+            <h2 class="animation" style="--D:0; --S:21;">Login</h2>
+            <form action="{{ url_for('login_validation') }}" method="POST">
+                <div class="input-box animation" style="--D:1; --S:22;">
+                    <input type="text" name="username" required>
+                    <label for="">Email</label>
+                    <i class="bx bxs-user"></i>
+                </div>
+                <div class="input-box animation" style="--D:2; --S:23;">
+                    <input type="password" name="password" required>
+                    <label for="">Password</label>
+                    <i class="bx bxs-lock-alt"></i>
+                </div>
+                <div class="input-box animation" style="--D:3; --S:24;">
+                    <button class="btn" type="submit">Login</button>
+                </div>
+                <div class="regi-link animation" style="--D:4; --S:25;">
+                    <p>Don't have an account ? <a href="#" class="SignUpLink">Sign Up</a></p>
+                </div>
+            </form>
+        </div>
+        <div class="info-content Login">
+            <h2 class="animation" style="--D:0;--S:20;">Welcome Back!</h2>
+            <p class="animation" style="--D:1; --S:21;">User Behaviour and Bot Detection Using Machine Learning!</p>
+        </div>
+
+        <!-- ========Register Form ==========-->
+        <div class="form-box Register">
+            <h2 class="animation" style="--li:17; --S:0;">Register</h2>
+            <form action="{{ url_for('add_users') }}" method="post">
+                <div class="input-box animation" style="--li:18; --S:1;">
+                    <input type="text" name="username" required>
+                    <label for="">Username</label>
+                    <i class="bx bxs-user"></i>
+                </div>
+                <div class="input-box animation" style="--li:18; --S:1;">
+                    <input type="email" name="email" required>
+                    <label for="">Email</label>
+                    <i class="bx bx-envelope icon"></i>
+                </div>
+                <div class="input-box animation" style="--li:19; --S:2;">
+                    <input type="password" name="password" required>
+                    <label for="">Password</label>
+                    <i class="bx bxs-lock-alt"></i>
+                </div>
+                <div class="input-box animation" style="--li:20; --S:3;">
+                    <button class="btn" type="submit">Register</button>
+                </div>
+                <div class="regi-link animation" style="--li:21; --S:4;">
+                    <p>Already have an account ? <a href="#" class="SignInLink">Sign In</a></p>
+                </div>
+            </form>
+        </div>
+        <div class="info-content Register">
+            <h2 class="animation" style="--li:17; --S:0;">Welcome!</h2>
+            <p class="animation" style="--li:18; --S:1;">User Behaviour and Bot Detection Using Machine Learning!</p>
+        </div>
+    </div>
+
+    <script>
+        // Notification JavaScript from previous index.html
+        function showNotification(message, category) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${category}`;
+            notification.textContent = message;
+            document.getElementById('notificationContainer').appendChild(notification);
+
+            // Fade in animation
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
+        }
+
+        // Handle flash messages
+        const flashMessages = [
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        { "message": {{ message|tojson|safe }}, "category": {{ category|tojson|safe }}}{{ "," if not loop.last else "" }}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        ];
+
+        // Show flash messages if any exist
+        flashMessages.forEach(flash => {
+            showNotification(flash.message, flash.category);
+        });
+
+        // Handle bot detection response (optional, for AJAX)
+        async function handleBotDetection(response) {
+            if (response && response.lockout) {
+                showNotification(response.message, 'error');
+            }
+        }
+    </script>
+    <script src="{{ url_for('static', filename='scripts/index.js') }}"></script>
+</body>
+</html>
