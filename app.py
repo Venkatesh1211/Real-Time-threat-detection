@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.secret_key = 'behavior'
 
 # Loading the trained model
-model = joblib.load(r"D:\Downloads\Capstone\decision_tree_user1.pkl")
+model = joblib.load("decision_tree_user1.pkl")
 
 # Dictionaries to track failed attempts, lockouts, and email cooldowns
 email_cooldown = {}  # Store last email time for each user
