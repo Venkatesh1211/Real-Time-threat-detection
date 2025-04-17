@@ -38,10 +38,10 @@ def connect_to_db():
     """
     try:
         return psycopg2.connect(
-            dbname='mouse_patterns',
-            user='postgres',
-            password='venky@123',
-            host='localhost',
+            dbname='botshield',
+            user='botshield_user',
+            password='4Ud7DBemNXiT72u1JwAjZ05EzxbSLldm7',
+            host='dpg-d0083spr0fns73e0ii0g-a',
             port=5432
         )
     except Exception as e:
