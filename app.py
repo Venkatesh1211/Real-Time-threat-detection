@@ -40,7 +40,7 @@ def connect_to_db():
         return psycopg2.connect(
             dbname='mouse_patterns',
             user='postgres',
-            password='loke123',
+            password='venky@123',
             host='localhost',
             port=5432
         )
